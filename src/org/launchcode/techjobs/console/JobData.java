@@ -7,9 +7,10 @@ import org.apache.commons.csv.CSVRecord;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+
+import static java.util.Collection.*;
+import static java.util.Collections.sort;
 
 /**
  * Created by LaunchCode
@@ -43,6 +44,7 @@ public class JobData {
             }
         }
 
+        sort(values);
         return values;
     }
 
@@ -51,7 +53,9 @@ public class JobData {
         // load data, if not already loaded
         loadData();
 
-        return allJobs;
+        ArrayList<HashMap<String, String>> allJobsCopy = allJobs;
+        // it says this is redundant, but isn't that the point?  Using the copy to protect the original.
+        return allJobsCopy;
     }
 
     /**
@@ -76,7 +80,7 @@ public class JobData {
 
             String aValue = row.get(column);
 
-            if (aValue.contains(value)) {
+            if (aValue.toLowerCase().contains(value.toLowerCase())) {
                 jobs.add(row);
             }
         }
@@ -84,6 +88,24 @@ public class JobData {
         return jobs;
     }
 
+    public static ArrayList<HashMap<String,String>> findByValue(String value){
+        loadData();
+
+        //make a new array list of hashmaps to store our results
+        ArrayList<HashMap<String,String>> jobs = new ArrayList<>();
+
+        //loop over every row
+        for (HashMap<String,String> hashMap : allJobs) {
+            for (Map.Entry<String,String> entry: hashMap.entrySet()) {
+                if(entry.getValue().toLowerCase().contains(value.toLowerCase()) || entry.getKey().toLowerCase().contains(value.toLowerCase())){
+                    jobs.add(hashMap);
+                }
+
+            }
+        }
+        //return relevant results
+        return jobs;
+    }
     /**
      * Read in data from a CSV file and store it in a list
      */
